@@ -43,12 +43,12 @@ select_profile() {
 
 set_profile() {
   local profile="${1}"
-  local keys
+  echo "Setting profile to: ${profile}"  # Debug statement
 
-  keys=('aws_access_key_id' 'aws_secret_access_key' 'aws_session_token' 'region' 'output')
-  for key in "${keys[@]}"; do
-    set_default_config_value "${profile}" "${key}"
-  done
+  set_default_config_value "${profile}" "sso_session"
+  set_default_config_value "${profile}" "sso_account_id"
+  set_default_config_value "${profile}" "sso_role_name"
+  set_default_config_value "${profile}" "region"
 }
 
 set_default_config_value() {
@@ -56,6 +56,7 @@ set_default_config_value() {
   local key="$2"
   local value
   value=$($AWS_CLI configure get "${key}" --profile "${src_profile}") || true
+  echo "Setting ${key} for ${DEFAULT_PROFILE} to ${value}"  # Debug statement
   if [[ -n "${value}" ]]; then
     $AWS_CLI configure set "${key}" "${value}" --profile "${DEFAULT_PROFILE}"
   fi
